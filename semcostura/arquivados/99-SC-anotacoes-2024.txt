@@ -1,0 +1,305 @@
+
+["61P00044", "55P05019", "61P205GR", "61P20561", "61P20420", "305527GR", "61P20440", "61P00043", "61P20430", "30P17800"]
+
+[
+	{
+		"IdEstoque": 1052384,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 144894,
+		"NrRomaneio": 145106,
+		"DtEntrada": "2024-06-07T00:00:00",
+		"IdLocal": 838,
+		"Local": {
+			"Id": "ET7",
+			"Descricao": "ESTANTE 7"
+		},
+		"NrCaixa": 4,
+		"NrPesoBruto": 6.9300,
+		"NrPesoLiquido": 5.8500,
+		"NrTara": 1.0800,
+		"NrQuantidade": 50,
+		"NrPeca": "4",
+		"Embalagem": {
+			"Id": 16,
+			"Descricao": "CONE"
+		},
+		"Lote": {
+			"Id": "91110",
+			"Descricao": "NR 188529  COR 3040"
+		}
+	},
+	{
+		"IdEstoque": 1054074,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 144894,
+		"NrRomaneio": 145106,
+		"DtEntrada": "2024-06-07T00:00:00",
+		"IdLocal": 838,
+		"Local": {
+			"Id": "ET7",
+			"Descricao": "ESTANTE 7"
+		},
+		"NrCaixa": 8,
+		"NrPesoBruto": 4.4000,
+		"NrPesoLiquido": 4.3400,
+		"NrTara": 0.0600,
+		"NrQuantidade": 56,
+		"NrPeca": "1",
+		"Embalagem": {
+			"Id": 16,
+			"Descricao": "CONE"
+		},
+		"Lote": {
+			"Id": "91110",
+			"Descricao": "NR 188529  COR 3040"
+		}
+	},
+	{
+		"IdEstoque": 1054075,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 144894,
+		"NrRomaneio": 145106,
+		"DtEntrada": "2024-06-07T00:00:00",
+		"IdLocal": 838,
+		"Local": {
+			"Id": "ET7",
+			"Descricao": "ESTANTE 7"
+		},
+		"NrCaixa": 9,
+		"NrPesoBruto": 5.6000,
+		"NrPesoLiquido": 5.5500,
+		"NrTara": 0.0500,
+		"NrQuantidade": 56,
+		"NrPeca": "2",
+		"Embalagem": {
+			"Id": 16,
+			"Descricao": "CONE"
+		},
+		"Lote": {
+			"Id": "91110",
+			"Descricao": "NR 188529  COR 3040"
+		}
+	},
+	{
+		"IdEstoque": 1052992,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 145147,
+		"NrRomaneio": 145359,
+		"DtEntrada": "2024-06-21T00:00:00",
+		"IdLocal": 836,
+		"Local": {
+			"Id": "ET5",
+			"Descricao": "ESTANTE 5"
+		},
+		"NrCaixa": 4,
+		"NrPesoBruto": 6.9300,
+		"NrPesoLiquido": 5.8500,
+		"NrTara": 1.0800,
+		"NrQuantidade": 50,
+		"NrPeca": "4",
+		"Embalagem": {
+			"Id": 6,
+			"Descricao": "CONES"
+		},
+		"Lote": {
+			"Id": "NE12C",
+			"Descricao": "NR 189016"
+		}
+	},
+	{
+		"IdEstoque": 1052993,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 145147,
+		"NrRomaneio": 145359,
+		"DtEntrada": "2024-06-21T00:00:00",
+		"IdLocal": 836,
+		"Local": {
+			"Id": "ET5",
+			"Descricao": "ESTANTE 5"
+		},
+		"NrCaixa": 5,
+		"NrPesoBruto": 1.1500,
+		"NrPesoLiquido": 0.8200,
+		"NrTara": 0.3300,
+		"NrQuantidade": 7,
+		"NrPeca": "5",
+		"Embalagem": {
+			"Id": 6,
+			"Descricao": "CONES"
+		},
+		"Lote": {
+			"Id": "NE12C",
+			"Descricao": "NR 189016"
+		}
+	},
+	{
+		"IdEstoque": 1053512,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 145465,
+		"NrRomaneio": 145690,
+		"DtEntrada": "2024-07-09T00:00:00",
+		"IdLocal": 835,
+		"Local": {
+			"Id": "ET4",
+			"Descricao": "ESTANTE 4"
+		},
+		"NrCaixa": 5,
+		"NrPesoBruto": 6.0000,
+		"NrPesoLiquido": 3.5100,
+		"NrTara": 2.4900,
+		"NrQuantidade": 30,
+		"NrPeca": "5",
+		"Embalagem": {
+			"Id": 6,
+			"Descricao": "CONES"
+		},
+		"Lote": {
+			"Id": "NE12C",
+			"Descricao": "NR 189528 COR 3040"
+		}
+	},
+	{
+		"IdEstoque": 1054269,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 145874,
+		"NrRomaneio": 146099,
+		"DtEntrada": "2024-08-05T00:00:00",
+		"IdLocal": 838,
+		"Local": {
+			"Id": "ET7",
+			"Descricao": "ESTANTE 7"
+		},
+		"NrCaixa": 1,
+		"NrPesoBruto": 6.9300,
+		"NrPesoLiquido": 5.8500,
+		"NrTara": 1.0800,
+		"NrQuantidade": 50,
+		"NrPeca": "1",
+		"Embalagem": {
+			"Id": 2,
+			"Descricao": "TUBOS"
+		},
+		"Lote": {
+			"Id": "120/2",
+			"Descricao": "NR 190304"
+		}
+	},
+	{
+		"IdEstoque": 1054270,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 145874,
+		"NrRomaneio": 146099,
+		"DtEntrada": "2024-08-05T00:00:00",
+		"IdLocal": 838,
+		"Local": {
+			"Id": "ET7",
+			"Descricao": "ESTANTE 7"
+		},
+		"NrCaixa": 2,
+		"NrPesoBruto": 6.9300,
+		"NrPesoLiquido": 5.8500,
+		"NrTara": 1.0800,
+		"NrQuantidade": 50,
+		"NrPeca": "2",
+		"Embalagem": {
+			"Id": 2,
+			"Descricao": "TUBOS"
+		},
+		"Lote": {
+			"Id": "120/2",
+			"Descricao": "NR 190304"
+		}
+	},
+	{
+		"IdEstoque": 1054271,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 145874,
+		"NrRomaneio": 146099,
+		"DtEntrada": "2024-08-05T00:00:00",
+		"IdLocal": 838,
+		"Local": {
+			"Id": "ET7",
+			"Descricao": "ESTANTE 7"
+		},
+		"NrCaixa": 3,
+		"NrPesoBruto": 6.9300,
+		"NrPesoLiquido": 5.8500,
+		"NrTara": 1.0800,
+		"NrQuantidade": 50,
+		"NrPeca": "3",
+		"Embalagem": {
+			"Id": 2,
+			"Descricao": "TUBOS"
+		},
+		"Lote": {
+			"Id": "120/2",
+			"Descricao": "NR 190304"
+		}
+	},
+	{
+		"IdEstoque": 1054272,
+		"IdAlmoxarifadoProcesso": 3,
+		"Material": {
+			"Id": "305527GR",
+			"Descricao": "FIO POLIESTER NE12C 120/2 B. ROSADO 3040"
+		},
+		"IdRomaneiro": 145874,
+		"NrRomaneio": 146099,
+		"DtEntrada": "2024-08-05T00:00:00",
+		"IdLocal": 838,
+		"Local": {
+			"Id": "ET7",
+			"Descricao": "ESTANTE 7"
+		},
+		"NrCaixa": 4,
+		"NrPesoBruto": 5.8000,
+		"NrPesoLiquido": 2.3400,
+		"NrTara": 3.4600,
+		"NrQuantidade": 20,
+		"NrPeca": "4",
+		"Embalagem": {
+			"Id": 2,
+			"Descricao": "TUBOS"
+		},
+		"Lote": {
+			"Id": "120/2",
+			"Descricao": "NR 190304"
+		}
+	}
+]

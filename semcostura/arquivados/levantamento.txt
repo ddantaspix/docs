@@ -1,0 +1,84 @@
+
+1)	Almoxarifado:  setor de Almoxarifado da AvBrasil
+2)	APN: sistema de estoque da AvBrasil. APN refere-se à Almoxarifado de Produtos do Nylon.
+3)	Área: uma unidade física da Empresa. Exemplo: unidade Lobo Júnior, unidade Avenida Brasil, etc. Será utilizado o mesmo conceito adotado pelo Sistema de Materiais para a definição de Área.
+4)	Artigo: no escopo deste projeto, um Artigo refere-se a um determinado Tecido.
+5)	Artigos: Tecidos produzidos pela Demillus.
+6)	AvBrasil: Área da Demillus situada na Avenida Brasil no Rio de Janeiro.
+7)	Boneco: planilha utilizada pela Área de PCP da Demillus que define a quantidade a ser fabricada de cada produto, bem como suas prioridades de fabricação. É enviada semanalmente a cada Área de Produção. Um dos produtos informados no Boneco são os Artigos a serem fabricados pela Tecelagem de Malhas.
+8)	Caixa: caixa onde são entregues os Insumos. Deve indicar a quantidade de Embalagens e o peso líquido total dos Insumos. Estas informações variam por Fornecedor e por Insumo.
+9)	Capacidade de Produção Diária: quantidade de Peças de um determinado Artigo que cada Modelo de Tear consegue fabricar em um dia, em um Turno. 
+10)	Centro de Custo: um departamento da Empresa para o qual são alocados receitas e/ou despesas.
+11)	Data de Fabricação: data em que o Lote de Fabricação de um Insumo foi produzido.
+12)	Data de Validade: data de validade de um Lote de Fabricação de um Insumo.
+13)	Embalagem: invólucro onde o Insumo é enrolado e entregue pelo Fornecedor. Ex: Tubos, Cones, Queijos e Carretéis.
+14)	Estoque: Almoxarifado.
+15)	Ficha Técnica: ficha que contém as diversas informações técnicas sobre cada Artigo necessárias à sua produção.
+16)	Ficha de Liberação: ficha utilizada para regular um Tear para uma Produção. Os dados desta ficha se referem à qualidade do Artigo e não à produção, e são somente informativos, ou seja, não são utilizados pelo sistema para cálculos.
+17)	Ficha de Produção: ficha que contém os dados de uma Peça já produzida.
+18)	Fornecedor: empresa que fornece os Insumos à Demillus.
+19)	Gaiola do Tear: onde são colocados os Tubos para ligação do Insumos aos blocos dos Teares.
+20)	Insumo: no escopo deste projeto, um Insumo refere-se a um determinado Fio.
+21)	Insumos: Fios utilizados pela Denillus na fabricação dos Artigos.
+22)	Lote de Fabricação: lotes de Insumos fabricados pelos Fornecedores.
+23)	Mestre de Grupo: conjunto de produtos ou Insumos de mesma natureza, de forma a indicar que qualquer um dos elementos do conjunto podem ser fabricados ou utilizados na fabricação de outro produto.
+24)	Modelo de Tear: modelos dos Teares usados na Demillus.
+25)	Necessidade de Fabricação: quantidade em quilos que deve ser produzida de cada Artigo. É informada no Boneco.
+26)	Ordem de Fabricação: quantidade em quilos de cada Artigo que deve ser produzida considerando: uma semana de produção, de um Tear, trabalhando um Turno por dia. A quantidade em quilos derivará a quantidade de Peças a serem produzidas, baseando-se na Capacidade de Produção de um Tear.
+27)	Peça: uma peça produzida contendo uma quantidade em quilos de um Artigo. Os modelos de Tear da AvBrasil produzem Peças com 40 quilos em média.
+28)	Produção: conjunto de Ordens de Fabricação a serem produzidas em um determinado período.
+29)	Refugo: material que não poderá mais ser reaproveitado para futuras produções
+30)	Romaneio: etiqueta que acompanhará a Peça após ter sido produzida.
+31)	Setup do Tear: configuração do Tear para uma produção.
+32)	Sistema de Contabilidade: sistema de Contabilidade da Demillus.
+33)	Sistema de Materiais: sistema de Materiais da Demillus.
+34)	Tear: máquina que tece Tecidos utilizando Fios.
+35)	Tecelagem de Malhas: Departamento da AvBrasil responsável pela tecelagem dos Artigos.
+36)	Tipo de Embalagem: formato do invólucro onde os Insumos estão enrolados: Ex: Tubos, Cones, Queijos e Carretéis.
+37)	Tubo: Embalagem onde o Fio (Insumo) é enrolado e entregue por cada Fornecedor. 
+
+
+_*_*_*_*_*_
+
+Confidencialidade: Este documento e as informações nele presentes devem ser tratados com confidencialidade, não podendo ser divulgados, transmitidos ou copiados a terceiros sem autorização de todos os envolvidos. 
+
+
+
+
+PENDÊNCIAS:
+
+1)	ACRESCENTAR TÓPICO EXPEDIÇÃO
+
+Dúvidas:
+2)	A ficha técnica é impressa junto com a OF?   levar este item para o tópico de OF
+3)	Não entendi onde é informado o mestre do artigo atualmente. Não achei na ficha do APN.
+c)	O saldo em processo será em quilos. Será feita a conversão para cones. 
+d)	Número de Cones ???? ver a gente conseguir calcular o peso médio do cone. TEM que ESTUDAR o APN
+d.1)	Devolução do FIO ????
+e)	Baixar o estoque de fio em processo é no recolhimento?
+f)	As OFs de desenvolvimento também possuem refugo. Na verdade, qq OF produzirá refugo
+g)	Será validado se o crachá do funcionário está no turno dele.  Confirmar!!
+h)	Perfis: líder de turno, operador e responsável pelo recolhimento (“Pesador”) (confirmar)
+i)	Reimprimir a etiqueta do último lote produzido ou de determinado lote. ???
+j)	Imprimir etiqueta de Refugo de desenvolvimento (tem a informação da OF) . Não entendi se a etiqueta vai ter a informação da OF ou será utilizada o próprio código de barra da OF para identificar o refugo.
+k)	Imprimir tópico de sistema Legadoss
+l)	Relatório de Produção Mensal
+m)	Estudar APN
+m.1)	Lista de Caixas ou Pallets cadastrados de um Insumo.
+m.2)	Lista de Tipos de Embalagens cadastrados.
+m.3)	Lista do estoque (caixas) por tipo de consumo
+
+
+Dúvidas:
+2.	Como o Refugo de desenvolvimento ficará atrelado a OF de desenvolvimento. A etiqueta é padronizada Teremos uma etiqueta própria para identificar que o refugo é desenvolvimento;
+3.	Rever os status da OFs e lotes
+OFs de troca: 
+Iniciada para amostra
+Iniciada para produção
+
+OFs de Produção:
+Iniciada para produção
+
+4.	Enxergar o planejamento de produção no Sem Costura
+5.	No código de barra da etiqueta deveria estar atrelado ao refugo operacional.  Para a OF de desenvolvimento, o código de barra da etiqueta estaria atrelado ao refugo de desenvolvimento.  vou considerar assim nas funcionalidades.
+6.	

@@ -1,0 +1,750 @@
+
+----|------ INICIO DE TAREFA ---------------------------|----
+---\/--[PDD] BLOQUEIO DE MODULOS () -------------------\/----
+
+/*
+ - -RESUMO: 
+	Alterar o sistema de bloqueio do PDD para bloquear por módulo e diminuir o tamanho do campo data para ficar bonito e dar espaço para o tipo de bloqueio.
+ST_BLOQUEIO 
+3
+
+
+1/1- Vendas Domiciliares - Faturamento
+2/2- Vendas Domiciliares - Devoluções
+4/5- Produção - Recepção
+8/4- Container
+
+BLOQUEIO DATA
+
+
+*/
+
+	SELECT
+		  P30.P30_ID_BLOQUEIO_PORTAL	AS ID_BLOQUEIO
+		, P30.P30_DT_INICIO				AS DT_INICIO
+		, P30.P30_DT_FIM				AS DT_FIM
+		, P30.P30_NM_USUARIO_INCLUSAO	AS NM_USUARIO_INCLUSAO
+		, P30.P30_DT_INCLUSAO			AS DT_INCLUSAO
+		, P30.P30_NM_USUARIO_ALTERACAO	AS NM_USUARIO_ALTERACAO
+		, P30.P30_DT_ALTERACAO			AS DT_ALTERACAO
+		, P30.P30_TX_MOTIVO				AS TX_MOTIVO
+		, P30.P30_ID_AREA_MODULO_PORTAL AS ID_AREA_MODULO   
+		, P34.P34_ST_PERMITE_BLOQUEIO   AS ST_PERMITE_BLOQUEIO
+		, P33.P33_TX_AREA				AS TX_AREA     
+		, P21.P21_TX_MODULO_PORTAL      AS TX_MODULO_PORTAL
+
+	FROM PDD_P30_BLOQUEIOS_PORTAL P30
+	INNER JOIN PDD_P34_AREAS_MODULOS P34
+		ON P30.P30_ID_AREA_MODULO_PORTAL = P34.P34_ID_AREA_MODULO_PORTAL
+	INNER JOIN PDD_P33_AREAS P33
+		ON P33.P33_ID_AREA = P34.P33_ID_AREA
+	INNER JOIN PDD_P21_MODULOS_PORTAL P21
+		ON P21.P21_ID_MODULO_PORTAL = P34.P21_ID_MODULO_PORTAL
+
+
+
+
+
+
+
+
+
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT P34_ID_AREA_MODULO_PORTAL
+      ,P33.P33_ID_AREA
+      ,P34.P21_ID_MODULO_PORTAL
+	  ,P34.P34_ST_PERMITE_BLOQUEIO
+	  ,P33.P33_TX_AREA
+	  ,P21.P21_TX_MODULO_PORTAL
+  FROM PDD_P34_AREAS_MODULOS P34
+  INNER JOIN PDD_P33_AREAS P33
+  ON P33.P33_ID_AREA = P34.P33_ID_AREA
+  INNER JOIN PDD_P21_MODULOS_PORTAL P21
+  ON P34.P21_ID_MODULO_PORTAL = P21.P21_ID_MODULO_PORTAL
+ 
+
+--ALTER TABLE PDD_P34_AREAS_MODULOS
+	--ADD P34_PERMITE_BLOQUEIO TINYINT NOT NULL DEFAULT 0
+
+--UPDATE PDD_P34_AREAS_MODULOS
+--SET P34_ST_PERMITE_BLOQUEIO = 1 
+--WHERE P34_ID_AREA_MODULO_PORTAL IN (1, 2, 5, 8)
+
+
+--/\-------- FIM DE TAREFA ------------------------/\--
+--|--[PDD] BLOQUEIO DE MODULOS () -----------------|---
+
+
+
+
+
+
+
+
+----|------ INICIO DE TAREFA ---------------------------|----
+---\/--[PDD] EH_CD (Centro de Distribuição container)--\/----
+
+/*
+Alterações
+
+OK- Remover do Controller o que foi criado e não está sendo usado. Deixar de novo somente as coisas do relatório de notas pistoladas
+OK - Remover o portal_distribuicaoDataSet
+OK - Nomenclatura geral será Valor Seguro. Não existirá Valor Seguro Estimado
+OK - - RelatorioNotasPistoladasForm: Acertar nome da classe e validar se DataFim é maior que Data Inicio caso os dois tenham sido informados. DateTime? tem como valor default null e não DateTime.MinValue
+OK - Data emissão não é utilizado, logo não precisa ser buscado
+OK - Filtro da tela de relatório de notas pistoladas: Todas as empresas, independente de estarem associadas ao usuário ou não.
+OK - Filtro da tela de relatório de notas pistoladas: Todos os estados diferentes da tabela P14 ( Notas Pistoladas )
+OK - Acertar na tela o valor default para todos os estados. Utilizar @null
+OK - Receber Descrição da empresa também via form para não ter que se preocupar em buscar do banco
+OK- Acertar uso de DateTime? nos parâmetros do relatório
+OK - Busca dos dados para o relatório: Acertar SQL para buscar todas as notas da P14, independente de ter sido utilizada para uma devolução ou não, e utilizar o ID ao invés da descrição no where
+OK- No Relatório: acertar nomes dos componentes e espaços sobrando
+*/
+
+-- ARQUIVOS:
+-- queries_containerCentroDistribuicao.sql
+
+
+--[1] Tarefa: CONTAINER ST_CD 
+
+--[ ] Excluir EhCD do PDD	modulo de Container
+
+-- AÇÕES
+--[1] USEI ALTER E TIRAR ST_CD E VER ONDE BATE ERRO E ONDE É REFERENCIADO NO CODIGO
+
+--[2] MATERIAL_ASSOCIACOES_USUARIOS_EMPRESAS_BUSCAR_LISTA   REMOVI O CAMPO DESSE QUERY 
+
+--[3] Duas procedures usam:   (CONFIGURACAO_ENVIO_ALTERAR e INCLUIR) 
+
+--[4] Valor Máximo Estimado	 	 Valor Seguro  @Mensagens.STR_VALOR_SEGURO
+/*
+sp_helptext PDD_SP_CONTAINER_EMPRESA_CONFIGURACAO_ENVIO_ALTERAR GO
+sp_helptext PDD_SP_CONTAINER_EMPRESA_CONFIGURACAO_ENVIO_INCLUIR GO
+*/
+  
+-------------------------------------------------------------  
+CREATE PROCEDURE [dbo].[PDD_SP_CONTAINER_EMPRESA_CONFIGURACAO_ENVIO_ALTERAR]  
+(  
+ @idEmpresaConfiguracaoEnvio INT  
+ , @idEmpresa    INT  
+ , @stCD      TINYINT  
+ , @cdUsuario    VARCHAR(8)  
+ , @vlMaximo     MONEY  
+)  
+AS  
+BEGIN  
+  
+ UPDATE PDD_P42_CONTAINER_EMPRESAS_CONFIGURACAO_ENVIO  
+ SET  
+  P42_ST_CD = @stCD  
+  , P42_DT_ULTIMA_ATUALIZACAO = GETDATE()  
+  , S02_CD_USUARIO_ULTIMA_ATUALIZACAO = @cdUsuario  
+  , P42_VL_ESTIMADO_MAXIMO = @vlMaximo  
+ WHERE P42_ID_CONTAINER_EMPRESAS_CONFIGURACAO_ENVIO = @idEmpresaConfiguracaoEnvio  
+  
+END  
+
+-------------------------------------------------------------  
+CREATE PROCEDURE [dbo].[PDD_SP_CONTAINER_EMPRESA_CONFIGURACAO_ENVIO_INCLUIR]  
+(  
+ @idEmpresa  INT  
+ , @stCD   TINYINT  
+ , @cdUsuario VARCHAR(8)  
+ , @vlMaximo  MONEY  
+)  
+AS  
+BEGIN  
+  
+ INSERT INTO PDD_P42_CONTAINER_EMPRESAS_CONFIGURACAO_ENVIO  
+ (  
+  M38_CD_EMPRESA_COMPRAS  
+  , P42_ST_CD  
+  , P42_DT_CRIACAO  
+  , S02_CD_USUARIO  
+  , P42_DT_ULTIMA_ATUALIZACAO  
+  , S02_CD_USUARIO_ULTIMA_ATUALIZACAO  
+  , P42_VL_ESTIMADO_MAXIMO  
+ )  
+ VALUES  
+ (  
+  @idEmpresa  
+  , @stCD  
+  , GETDATE()  
+  , @cdUsuario  
+  , NULL  
+  , NULL  
+  , @vlMaximo  
+ )  
+  
+END  
+
+
+------- 
+SELECT
+	P26.M38_CD_EMPRESA_COMPRAS		AS CD_EMPRESA
+	, CASE WHEN M45.M45_NM_APELIDO = ''
+		THEN M45.M45_NM_RAZAO_SOCIAL
+		ELSE M45.M45_NM_APELIDO
+	END									AS NM_APELIDO
+	, P25.P25_ST_CD						AS ST_CD
+FROM PDD_P26_MATERIAL_USUARIOS_EMPRESA P26
+INNER JOIN materiais..MAT_M45_EMPRESAS_COMPRAS M45
+	ON M45.M38_CD_EMPRESA_COMPRAS = P26.M38_CD_EMPRESA_COMPRAS
+INNER JOIN PDD_P25_MATERIAL_EMPRESAS_CONFIGURACAO_ENVIO P25
+	ON P25.M38_CD_EMPRESA_COMPRAS = P26.M38_CD_EMPRESA_COMPRAS
+WHERE P26.S02_CD_USUARIO = @cdUsuario
+ORDER BY
+	CASE WHEN M45.M45_NM_APELIDO = ''
+		THEN M45.M45_NM_RAZAO_SOCIAL
+		ELSE M45.M45_NM_APELIDO
+	END
+----
+
+
+
+
+
+USE [portal_distribuicao]
+GO
+
+
+
+/****** Object:  Table [dbo].[PDD_P42_CONTAINER_EMPRESAS_CONFIGURACAO_ENVIO]    Script Date: 31/10/2024 16:22:34 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+/****** Object:  Table [dbo].[PDD_P42_CONTAINER_EMPRESAS_CONFIGURACAO_ENVIO]    Script Date: 31/10/2024 16:22:34 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER TABLE [dbo].[PDD_P42_CONTAINER_EMPRESAS_CONFIGURACAO_ENVIO]
+	ADD COLUMN [P42_ST_CD]
+GO
+
+
+
+--/\-------- FIM DE TAREFA ------------------------/\--
+--|--PDD EH_CD (Centro de Distribuição container) -|---
+
+----|------- INICIO DE TAREFA -------------|---
+---\/-[PDD] NOTAS PISTOLADAS (RELATÓRIO)--\/----
+
+
+
+
+--[1] Tarefa: NOTAS PISTOLADAS
+
+
+-- CONSULTA
+DECLARE @TIPO_DEVOLUCAO varchar(50) = 'Estorno'
+
+
+SELECT P14.N03_NR_NOTA_FISCAL			AS NR_NOTA_FISCAL
+		, CASE WHEN M45.M45_NM_APELIDO = '' 
+			THEN M45.M45_NM_RAZAO_SOCIAL
+			ELSE M45.M45_NM_APELIDO
+		END									AS NM_APELIDO
+		, P14.C06_CD_REVENDEDORA			AS CD_REVENDEDORA
+		, P14.C03_CD_EMPRESA_FATURAMENTO    AS CD_EMPRESA
+		, P14.C06_NM_REVENDEDORA			AS NM_REVENDEDORA
+		, P14.C03_CD_SETOR					AS CD_SETOR
+		, P14.C01_SG_UF						AS CD_ESTADO
+		, P14.C05_NR_ANO_CAMPANHA			AS ANO_CAMPANHA
+		, P14.C05_NR_CAMPANHA				AS NR_CAMPANHA
+		, P14.P14_NR_QTDE_VOLUMES			AS NR_VOLUME
+		, P19.P19_TX_TIPO_DEVOLUCAO			AS TX_TIPO_DEVOLUCAO
+		, P14.P14_NM_USUARIO_INCLUSAO		AS NM_USUARIO
+		, P14.P14_DT_INCLUSAO				AS DT_DIGITACAO
+		, GETDATE() 						AS DT_EMISSAO
+	FROM PDD_P14_RECEPCAO_NOTAS_FISCAIS P14
+	INNER JOIN {0}..MAT_M45_EMPRESAS_COMPRAS M45
+		ON M45.M38_CD_EMPRESA_COMPRAS = P14.C03_CD_EMPRESA_FATURAMENTO
+	INNER JOIN PDD_P19_TIPOS_DEVOLUCAO P19
+		ON P19.P19_ID_TIPO_DEVOLUCAO = P14.P19_ID_TIPO_DEVOLUCAO
+	WHERE P14.P15_ID_DEVOLUCAO IS NULL 
+	AND (@dtInicio is null or P14.P14_DT_INCLUSAO >= @dtInicio) AND (@dtFim is null or P14.P14_DT_INCLUSAO <= @dtFim)
+	AND (@sgUf is null or P14.C01_SG_UF = @sgUf)
+	AND (@idEmpresa is null or @idEmpresa = P14.C03_CD_EMPRESA_FATURAMENTO)
+	AND P19.P19_TX_TIPO_DEVOLUCAO = @TIPO_DEVOLUCAO
+	ORDER BY P14.P14_ID_RECEPCAO_NOTA_FISCAL DESC
+
+
+-- PROCEDURE DA CONSULTA (Usada somente para gerar o dataset)
+USE [portal_distribuicao]
+GO
+/****** Object:  StoredProcedure [dbo].[PDD_SP_REL_NOTAS_PISTOLADAS]    Script Date: 29/10/2024 14:56:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[PDD_SP_REL_NOTAS_PISTOLADAS]
+(
+ @dtInicio datetime,
+ @dtFim datetime ,
+ @sgUf varchar(02),
+ @cdEmpresa char
+)
+AS
+BEGIN
+
+DECLARE @TIPO_DEVOLUCAO varchar(50) = 'Estorno'
+DECLARE @ID_TODOS int = -1
+
+
+DECLARE @TIPO_DEVOLUCAO varchar(50) = 'Estorno'
+
+
+SELECT P14.N03_NR_NOTA_FISCAL			AS NR_NOTA_FISCAL
+		, CASE WHEN M45.M45_NM_APELIDO = '' 
+			THEN M45.M45_NM_RAZAO_SOCIAL
+			ELSE M45.M45_NM_APELIDO
+		END									AS NM_APELIDO
+		, P14.C06_CD_REVENDEDORA			AS CD_REVENDEDORA
+		, P14.C03_CD_EMPRESA_FATURAMENTO    AS CD_EMPRESA
+		, P14.C06_NM_REVENDEDORA			AS NM_REVENDEDORA
+		, P14.C03_CD_SETOR					AS CD_SETOR
+		, P14.C01_SG_UF						AS CD_ESTADO
+		, P14.C05_NR_ANO_CAMPANHA			AS ANO_CAMPANHA
+		, P14.C05_NR_CAMPANHA				AS NR_CAMPANHA
+		, P14.P14_NR_QTDE_VOLUMES			AS NR_VOLUME
+		, P19.P19_TX_TIPO_DEVOLUCAO			AS TX_TIPO_DEVOLUCAO
+		, P14.P14_NM_USUARIO_INCLUSAO		AS NM_USUARIO
+		, P14.P14_DT_INCLUSAO				AS DT_DIGITACAO
+		
+	FROM PDD_P14_RECEPCAO_NOTAS_FISCAIS P14
+	INNER JOIN {0}..MAT_M45_EMPRESAS_COMPRAS M45
+		ON M45.M38_CD_EMPRESA_COMPRAS = P14.C03_CD_EMPRESA_FATURAMENTO
+	INNER JOIN PDD_P19_TIPOS_DEVOLUCAO P19
+		ON P19.P19_ID_TIPO_DEVOLUCAO = P14.P19_ID_TIPO_DEVOLUCAO
+	WHERE P14.P15_ID_DEVOLUCAO IS NULL 
+	AND (@dtInicio is null or P14.P14_DT_INCLUSAO >= @dtInicio) AND (@dtFim is null or P14.P14_DT_INCLUSAO <= @dtFim)
+	AND (@sgUf is null or P14.C01_SG_UF = @sgUf)
+	AND (@idEmpresa is null or @idEmpresa = P14.C03_CD_EMPRESA_FATURAMENTO)
+	AND P19.P19_TX_TIPO_DEVOLUCAO = @TIPO_DEVOLUCAO
+	ORDER BY P14.P14_ID_RECEPCAO_NOTA_FISCAL DESC
+	
+	
+END
+-----------
+
+	--SELECT 1									AS NR_NOTA_FISCAL
+	--	   ,'EMPRESA'							AS TX_EMPRESA
+	--	   ,'REVENDEDORA'						AS TX_REVENDEDORA
+	--	   ,1111								AS NR_SETOR
+	--	   ,'RJ'								AS SG_ESTADO
+	--	   ,convert(varchar(7),getdate(),111)	AS TX_CAMPANHA
+	--	   ,1									AS NR_VOLUMES
+	--	   ,'ESTORNO'							AS TX_TIPO_DEVOLUCAO	
+	--	   ,'PIX01'								AS TX_USUARIO
+	--	   ,GETDATE()							AS DT_DIGITACAO
+
+
+SELECT P14.N03_NR_NOTA_FISCAL			AS NR_NOTA_FISCAL
+		, CASE WHEN M45.M45_NM_APELIDO = '' 
+			THEN M45.M45_NM_RAZAO_SOCIAL
+			ELSE M45.M45_NM_APELIDO
+		END									AS NM_APELIDO
+		, P14.C06_CD_REVENDEDORA			AS CD_REVENDEDORA
+		, P14.C06_NM_REVENDEDORA			AS NM_REVENDEDORA
+		, P14.C03_CD_SETOR					AS CD_SETOR
+		, P14.C01_SG_UF						AS CD_ESTADO
+		, P14.C05_NR_ANO_CAMPANHA			AS ANO_CAMPANHA
+		, P14.C05_NR_CAMPANHA				AS NR_CAMPANHA
+		, P14.P14_NR_QTDE_VOLUMES			AS NR_VOLUME
+		, P19.P19_TX_TIPO_DEVOLUCAO			AS TX_TIPO_DEVOLUCAO
+		, P14.P14_NM_USUARIO_INCLUSAO		AS NM_USUARIO
+		, P14.P14_DT_INCLUSAO				AS DT_DIGITACAO
+	FROM PDD_P14_RECEPCAO_NOTAS_FISCAIS P14
+	INNER JOIN {0}..MAT_M45_EMPRESAS_COMPRAS M45
+		ON M45.M38_CD_EMPRESA_COMPRAS = P14.C03_CD_EMPRESA_FATURAMENTO
+	INNER JOIN PDD_P19_TIPOS_DEVOLUCAO P19
+		ON P19.P19_ID_TIPO_DEVOLUCAO = P14.P19_ID_TIPO_DEVOLUCAO
+	--WHERE P14.P14_NM_USUARIO_INCLUSAO = @cdUsuario
+	AND P14.P15_ID_DEVOLUCAO IS NULL 
+	AND @dtInicio IS NULL OR (DT_DIGITACAO >= @dtInicio)
+	AND @dtFim    IS NULL OR (DT_DIGITACAO <= @dtFim)
+--	AND P14.P14_ST_TAXA = @stTaxa
+	ORDER BY P14.P14_ID_RECEPCAO_NOTA_FISCAL DESC
+
+
+
+
+
+
+ALTER PROCEDURE PDD_SP_REL_NOTAS_PISTOLADAS
+AS
+BEGIN
+
+	SELECT 1									AS NR_NOTA_FISCAL
+		   ,'EMPRESA'							AS TX_EMPRESA
+		   ,'REVENDEDORA'						AS TX_REVENDEDORA
+		   ,'SETOR'								AS SETOR
+		   ,'RJ'								AS ESTADO
+		   ,convert(varchar(7),getdate(),111)	AS CAMPANHA
+		   ,1									AS VOLUMES
+		   ,'ESTORNO'							AS TIPO_DEVOLUCAO	
+		   ,'PIX01'								AS USUARIO
+		   ,GETDATE()							AS DT_DIGITACAO
+
+					
+
+END
+GO
+
+
+--/\-------- FIM DE TAREFA -------------/\--
+--|--PDD] NOTAS PISTOLADAS (RELATÓRIO) -|---
+
+
+
+
+/****** Object: Procedure ISC_SP_DATA_NUMERO_TEMP_LOTE_ALTERAR   Script Date: 18/10/2024 11:51:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+------------------------------------------------------------------------------------------
+CREATE PROCEDURE ISC_SP_DATA_NUMERO_TEMP_LOTE_ALTERAR
+(
+	@IdLote				INT,
+	@IdOf				INT
+)
+AS
+BEGIN
+	
+	UPDATE SCO_C41_LOTES 
+	SET C41_DT_GERACAO_DOC = , C41_NR_DOC_TEMP = 
+	WHERE C41_ID_LOTE = @IdLote AND C40_ID_OF = @IdOf
+END 
+
+
+-- Tabelas usadas
+
+-- INSERIDAS
+materiais..MAT_M48_DOC_MATERIAIS_BAT
+materiais..MAT_M47_DOCUMENTOS_BAT
+
+--materiais..MAT_M48_DOCUMENTOS_PROCESSADOS
+
+Campos novos tabela sem costura 
+
+
+	 C41.C41_DT_GERACAO_DOC,
+	 C41.C41_NR_DOC_TEMP,
+
+
+SELECT * FROM materiais..MAT_M48_DOC_MATERIAIS_BAT ORDER BY M47_NR_SEQUENCIAL DESC;
+SELECT * FROM materiais..MAT_M47_DOCUMENTOS_BAT ORDER BY M47_NR_SEQUENCIAL DESC;
+
+
+
+SELECT * FROM SCO_C67_EVENTOS_NATUREZA_DOCUMENTOS WHERE C36_ID_EVENTO IN (13, 15)
+SELECT * FROM SCO_C41_LOTES
+
+SELECT * FROM SCO_C42_INSUMO_LOTES
+
+
+-- CONSUTADAS
+MAT_M29_SALDOS
+
+M02_NR_Parametro
+
+
+ CONCAT('OF: ', C41.C40_ID_OF, ' LOTE: ', C41.C41_ID_LOTE) AS Observacao,
+
+
+use [sco_desenv]
+
+
+CREATE PROCEDURE ISC_SP_EVENTO_RECOLHIMENTO_EXISTE
+
+AS
+BEGIN
+
+DECLARE @ID_EVENTO_RECOLHIMENTO AS INT = 13;
+	
+	SELECT 1 FROM SCO_C67_EVENTOS_NATUREZA_DOCUMENTOS 
+	WHERE C36_ID_EVENTO = @ID_EVENTO_RECOLHIMENTO
+	
+END 
+
+
+CREATE PROCEDURE [dbo].[ISC_SP_DOCUMENTOS_MATERIAIS_BUSCAR_LISTA]
+
+AS 
+BEGIN 
+
+DECLARE @ID_EVENTO_RECOLHIMENTO AS INT = 13;
+DECLARE @TIPO_OF_PRODUCAO TINYINT = 1;
+DECLARE	@TIPO_OF_TROCA TINYINT = 2;
+DECLARE	@TIPO_OF_AVULSA_PRODUCAO TINYINT = 3;
+DECLARE	@TIPO_OF_AVULSA_TROCA TINYINT = 4;
+DECLARE @STATUS_LOTE_RECOLHIDO TINYINT = 2;
+DECLARE @STATUS_LOTE_PESADO TINYINT = 3;
+DECLARE @CD_USUARIO CHAR(8) = 'SEMCOSTU'
+
+SELECT 
+	 C41.C40_ID_OF AS IdOf, 
+	 C41.C41_ID_LOTE AS IdLote,
+     C20.C20_CD_PRODUTO As Material,
+     C41.C41_NR_QTDE_PECAS AS Quantidade, 
+     C67.C67_CD_CENTRO_CUSTO_ATENDE AS CentroCustoAtende, 
+     C67.C67_CD_CENTRO_CUSTO_RECEBE AS CentroCustoRecebe, 
+     C67.C67_CD_NATUREZA AS NrNatureza, 
+     C67.C67_NR_CONTA_ATENDE AS ContaContabilAtende, 
+     C67.C67_NR_CONTA_RECEBE AS ContaContabilRecebe,
+	 @CD_USUARIO AS CdUsuario
+
+    FROM SCO_C41_LOTES C41 
+INNER JOIN SCO_C40_OF C40
+ON C40.C40_ID_OF = C41.C40_ID_OF
+INNER JOIN SCO_C67_EVENTOS_NATUREZA_DOCUMENTOS C67
+ON C67.C37_ID_TIPO_OF = C40.C37_ID_TIPO_OF
+INNER JOIN SCO_C20_FICHAS C20
+ON C20.C20_ID_FICHA = C40.C20_ID_FICHA
+WHERE C40.C37_ID_TIPO_OF IN (@TIPO_OF_PRODUCAO, @TIPO_OF_TROCA, @TIPO_OF_AVULSA_PRODUCAO, @TIPO_OF_AVULSA_TROCA) -- TIPOS DE OF
+AND C67.C36_ID_EVENTO = @ID_EVENTO_RECOLHIMENTO
+AND C41.C38_ID_STATUS_LOTE IN (@STATUS_LOTE_RECOLHIDO,@STATUS_LOTE_PESADO)
+AND C41_DT_GERACAO_DOC IS NULL
+AND C41_NR_DOC_TEMP IS NULL
+
+END
+
+
+
+
+USE [sco_desenv]
+GO
+
+ALTER TABLE SCO_C41_LOTES
+ ADD 
+   C41_DT_GERACAO_DOC DATETIME NULL,
+   C41_NR_DOC_TEMP INT NULL;
+
+
+
+
+
+SELECT *
+  FROM [controle].[dbo].[CBE_C01_BLOQUEIOS]
+
+select * from SCO_C41_LOTES
+
+
+
+begin tran
+
+
+DELETE materiais..MAT_M48_DOC_MATERIAIS_BAT WHERE M47_NR_SEQUENCIAL = 17100439;
+DELETE materiais..MAT_M47_DOCUMENTOS_BAT WHERE M47_NR_SEQUENCIAL = 17100430 ;
+
+SELECT * FROM materiais..MAT_M48_DOCUMENTOS_PROCESSADOS
+
+SELECT * FROM materiais..MAT_M48_DOC_MATERIAIS_BAT ORDER BY M47_NR_SEQUENCIAL DESC;
+SELECT * FROM materiais..MAT_M47_DOCUMENTOS_BAT ORDER BY M47_NR_SEQUENCIAL DESC;
+
+--rollback tran
+-- commit tran
+
+
+
+
+SELECT * FROM SCO_C67_EVENTOS_NATUREZA_DOCUMENTOS WHERE C36_ID_EVENTO IN (13, 15)
+SELECT * FROM SCO_C41_LOTES
+
+SELECT * FROM SCO_C42_INSUMO_LOTES
+
+
+
+
+
+
+
+
+CREATE PROCEDURE ISC_SP_DADOS_DOCUMENTO_LER
+(
+	@Material					INT,
+	@Unidade					CHAR(02),
+	@Quantidade					SMALLMONEY,
+	@Observacao 				CHAR(30),
+	@CdUsuario					CHAR(08),
+	@NrNatureza					TINYINT,
+	@CentroCustoAtende			CHAR(05),
+	@ContaContabilAtende		CHAR(06),
+	@CentroCustoRecebe			CHAR(05),
+	@ContaContabilRecebe		CHAR(06)
+)
+AS 
+BEGIN 
+
+
+SELECT
+'30553861' AS Material,
+'TE' AS Unidade,
+3.0 AS Quantidade,
+'TEST' AS Observacao,
+'Pix01' AS CdUsuario,
+10 AS NrNatureza,
+'149.01' AS ContaContabilAtende,
+'9024' AS CentroCustoAtende,
+'149.01' AS ContaContabilRecebe,
+'9024' AS CentroCustoRecebe
+UNION 
+	SELECT
+'30553862' AS Material,
+'ST' AS Unidade,
+2.0 AS Quantidade,
+'TEST' AS Observacao,
+'SEMCOS' AS CdUsuario,
+10 AS NrNatureza,
+'149.01' AS ContaContabilAtende,
+'9024' AS CentroCustoAtende,
+'149.01' AS ContaContabilRecebe,
+'9024' AS CentroCustoRecebe;
+
+
+
+END
+
+
+
+CREATE PROCEDURE ISC_SP_DADOS_DOCUMENTO_LER
+(
+	@Material				INT,
+	@Unidade					CHAR(02),
+	@Quantidade					SMALLMONEY,
+	@Observacao 				CHAR(30),
+	@CdUsuario					CHAR(08),
+	@NrNatureza					TINYINT,
+	@CentroCustoAtende			CHAR(05),
+	@ContaContabilAtende		CHAR(06),
+	@CentroCustoRecebe			CHAR(05),
+	@ContaContabilRecebe		CHAR(06)
+)
+AS 
+BEGIN 
+	
+SELECT 
+Material = "30553861",
+Unidade = "TE",
+Quantidade = 3.0,
+Observacao ="TEST",
+CdUsuario = "Pix01",
+NrNatureza = 10,
+ContaContabilAtende = "149.01",
+CentroCustoAtende = "9024 ",
+ContaContabilRecebe = "149.01",
+CentroCustoRecebe = "9024 "
+
+END
+
+
+
+
+
+Material = UtilDB.getString( dr["Material"], string.Empty).Trim() )
+Unidade  = UtilDB.getString( dr["Unidade"], string.Empty).Trim() ) 
+Quantidade: 3.0,
+Observacao: "TEST",
+CdUsuario: "Pix01",
+NrNatureza: 10,
+ContaContabilAtende: "149.01",
+CentroCustoAtende: "9024 ",
+ContaContabilRecebe: "149.01",
+CentroCustoRecebe: "9024 "
+
+
+SELECT * FROM MAT_M48_DOC_MATERIAIS_BAT
+SELECT * FROM MAT_M47_DOCUMENTOS_BAT
+
+
+		Message	"Cannot insert the value NULL into column 'M30_CD_EMPRESA', table 'materiais.dbo.MAT_M47_DOCUMENTOS_BAT'; column does not allow nulls. INSERT fails.\r\nThe statement has been terminated."	string
+
+
+
+UPDATE 
+
+
+
+	//----------------------------------------------------------------------
+		static public bool eventoRecolhimentoExiste( DBConexao db )
+		{
+			string sql = string.Format( SQLQueriesIntegracaoSemCostura.EVENTO_RECOLHIMENTO_EXISTE, Config.DBNames.DBMaterial );
+
+			using ( SqlCommand cmd = db.getNewSqlCommandLeitura( DBConexao.ID_CONEXAO_SCO, sql ) )
+			{
+				cmd.CommandType = CommandType.StoredProcedure;
+
+				logger.Debug( UtilDB.Dump( cmd ) );
+				try
+				{
+					using ( SqlDataReader dr = cmd.ExecuteReader() )
+					{
+						return ( dr.Read() );
+					}
+				}
+				catch ( Exception e )
+				{
+					logger.Error( UtilDB.Dump( cmd ), e );
+					return ( false );
+				}
+			}
+		}
+		
+		
+		
+		-- BUSCAR LISTa
+		
+		
+/****** Object:  StoredProcedure [dbo].[ISC_SP_DADOS_DOCUMENTO_LER]    Script Date: 04/10/2024 15:09:39 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE ISC_SP_DADOS_DOCUMENTO_LER
+
+AS 
+BEGIN 
+
+DECLARE @ID_EVENTO_RECOLHIMENTO AS INT = 13;
+DECLARE @TIPO_OF_PRODUCAO TINYINT = 1;
+DECLARE	@TIPO_OF_TROCA TINYINT = 2;
+DECLARE	@TIPO_OF_AVULSA_PRODUCAO TINYINT = 3;
+DECLARE	@TIPO_OF_AVULSA_TROCA TINYINT = 4;
+DECLARE @STATUS_LOTE_RECOLHIDO TINYINT = 2;
+DECLARE @STATUS_LOTE_PESADO TINYINT = 3;
+
+SELECT
+	 C41.C40_ID_OF As IdOf,
+	 C41.C41_ID_LOTE As IdLote,
+     C41.C38_ID_STATUS_LOTE,
+     C40.C37_ID_TIPO_OF,
+     C20.C20_CD_PRODUTO As Material,
+     C41.C41_NR_QTDE_PECAS AS Quantidade, 
+     C67.C67_CD_CENTRO_CUSTO_ATENDE AS CentroCustoAtende, 
+     C67.C67_CD_CENTRO_CUSTO_RECEBE AS CentroCustoRecebe, 
+     C67.C67_CD_NATUREZA AS NrNatureza, 
+     C67.C67_NR_CONTA_ATENDE AS ContaContabilAtende, 
+     C67.C67_NR_CONTA_RECEBE AS ContaContabilRecebe,
+
+    FROM SCO_C41_LOTES C41 
+INNER JOIN SCO_C40_OF C40
+ON C40.C40_ID_OF = C41.C40_ID_OF
+INNER JOIN SCO_C67_EVENTOS_NATUREZA_DOCUMENTOS C67
+ON C67.C37_ID_TIPO_OF = C40.C37_ID_TIPO_OF
+INNER JOIN SCO_C20_FICHAS C20
+ON C20.C20_ID_FICHA = C40.C20_ID_FICHA
+WHERE C40.C37_ID_TIPO_OF IN (@TIPO_OF_PRODUCAO, @TIPO_OF_TROCA, @TIPO_OF_AVULSA_PRODUCAO, @TIPO_OF_AVULSA_TROCA) -- TIPOS DE OF
+AND C67.C36_ID_EVENTO = @ID_EVENTO_RECOLHIMENTO
+AND C41.C38_ID_STATUS_LOTE IN (@STATUS_LOTE_RECOLHIDO,@STATUS_LOTE_PESADO)
+AND C41_DT_GERACAO_DOC IS NULL
+AND C41_NR_DOC_TEMP IS NULL
+
+END
